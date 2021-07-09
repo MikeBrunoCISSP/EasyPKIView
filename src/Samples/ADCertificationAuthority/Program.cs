@@ -11,7 +11,8 @@ namespace CA
         static void Main(string[] args)
         {
             //Collect data about all enterprise sub CAS published in your AD 
-            var AllCAs = ADCertificationAuthority.GetAll().Where(p => p.HasTemplates);
+            var AllCAs = ADCertificationAuthority.GetAll();
+            var CAs = AllCAs.Where(p => p.Templates.Where(q => q.RequiresPrivateKeyArchival).Any()).ToList();
 
             //Lets pop the first one off and have a look 
             var FirstOne = AllCAs.First();
