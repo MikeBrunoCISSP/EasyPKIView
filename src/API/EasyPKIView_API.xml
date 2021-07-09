@@ -89,17 +89,19 @@
             Indicates the TPM Key Attestation type required by this certificate template (if applicable)
             </summary>
         </member>
-        <member name="M:EasyPKIView.ADCertificateTemplate.#ctor(System.String)">
+        <member name="M:EasyPKIView.ADCertificateTemplate.#ctor(System.String,System.Boolean)">
             <summary>
             ADCertificateTemplate Constructor 1
             </summary>
             <param name="name">The Name attribute of the certificate template as indicated in Active Directory</param>
+            <param name="throwIfNotFound">If true, throw an exception if the template object cannot be loaded from Active Directory</param>
         </member>
-        <member name="M:EasyPKIView.ADCertificateTemplate.#ctor(System.DirectoryServices.DirectoryEntry)">
+        <member name="M:EasyPKIView.ADCertificateTemplate.#ctor(System.DirectoryServices.DirectoryEntry,System.Boolean)">
             <summary>
             ADCertificateTemplate Constructor 2
             </summary>
             <param name="TemplateEntry">The Active Directory entry pointing to this certificate template</param>
+            <param name="throwIfNotFound">If true, throw an exception if the template object cannot be loaded from Active Directory</param>
         </member>
         <member name="M:EasyPKIView.ADCertificateTemplate.#ctor(System.Security.Cryptography.X509Certificates.X509Certificate2)">
             <summary>
@@ -184,23 +186,26 @@
             Indicates whether this CA advertises any certificate templates.
             </summary>
         </member>
-        <member name="M:EasyPKIView.ADCertificationAuthority.#ctor(System.String)">
+        <member name="M:EasyPKIView.ADCertificationAuthority.#ctor(System.String,System.Boolean)">
             <summary>
             ADCertificationAuthority Constructor 1
             </summary>
             <param name="name">The common name of the CA</param>
+            <param name="throwIfNotFound">If true, throw an exception if the template object cannot be loaded from Active Directory</param>
         </member>
-        <member name="M:EasyPKIView.ADCertificationAuthority.#ctor(System.DirectoryServices.DirectoryEntry)">
+        <member name="M:EasyPKIView.ADCertificationAuthority.#ctor(System.DirectoryServices.DirectoryEntry,System.Boolean)">
             <summary>
             ADCertificationAuthority Constructor 2
             </summary>
             <param name="CAEntry">The Active Directory entry pointing to this CA Enrollment Services object</param>
+            <param name="throwIfNotFound">If true, throw an exception if the template object cannot be loaded from Active Directory</param>
         </member>
-        <member name="M:EasyPKIView.ADCertificationAuthority.#ctor(System.Security.Cryptography.X509Certificates.X509Certificate2)">
+        <member name="M:EasyPKIView.ADCertificationAuthority.#ctor(System.Security.Cryptography.X509Certificates.X509Certificate2,System.Boolean)">
             <summary>
             ADCertificationAuthority Constructor 3
             </summary>
             <param name="CACert">The CA's public certificate</param>
+            <param name="throwIfNotFound">If true, throw an exception if the template object cannot be loaded from Active Directory</param>
         </member>
         <member name="M:EasyPKIView.ADCertificationAuthority.GetAll">
             <summary>

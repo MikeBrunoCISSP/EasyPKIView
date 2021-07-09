@@ -51,40 +51,48 @@ namespace EasyPKIView
         /// ADCertificationAuthority Constructor 1
         /// </summary>
         /// <param name="name">The common name of the CA</param>
-        public ADCertificationAuthority(string name)
+        /// <param name="throwIfNotFound">If true, throw an exception if the template object cannot be loaded from Active Directory</param>
+        public ADCertificationAuthority(string name, bool throwIfNotFound = true)
             : base(LdapUrls.EnrollmentService(name), ObjectClass.PKIEnrollmentService)
         {
-            if (!Usable)
+            if (!IsValid)
             {
                 throw new CertificationAuthorityNotFoundException(name);
             }
-            SetFieldsFromDirectoryObject();
+            SetFieldsFromDirectoryObject(throwIfNotFound);
         }
 
         /// <summary>
         /// ADCertificationAuthority Constructor 2
         /// </summary>
         /// <param name="CAEntry">The Active Directory entry pointing to this CA Enrollment Services object</param>
-        public ADCertificationAuthority(DirectoryEntry CAEntry)
+        /// <param name="throwIfNotFound">If true, throw an exception if the template object cannot be loaded from Active Directory</param>
+        public ADCertificationAuthority(DirectoryEntry CAEntry, bool throwIfNotFound = true)
             : base(CAEntry, ObjectClass.PKIEnrollmentService)
         {
-            if (!Usable)
+            if (!IsValid)
             {
                 throw new CertificationAuthorityNotFoundException();
             }
-            SetFieldsFromDirectoryObject();
+            SetFieldsFromDirectoryObject(throwIfNotFound);
         }
 
         /// <summary>
         /// ADCertificationAuthority Constructor 3
         /// </summary>
         /// <param name="CACert">The CA's public certificate</param>
-        public ADCertificationAuthority(X509Certificate2 CACert)
-            : this(CACert.Subject.Replace(@"CN=", string.Empty).Split(',')[0])
+        /// <param name="throwIfNotFound">If true, throw an exception if the template object cannot be loaded from Active Directory</param>
+        public ADCertificationAuthority(X509Certificate2 CACert, bool throwIfNotFound = true)
+            : this(CACert.Subject.Replace(@"CN=", string.Empty).Split(',')[0], throwIfNotFound)
         { }
 
-        private void SetFieldsFromDirectoryObject()
+        private void SetFieldsFromDirectoryObject(bool throwIfNotFound)
         {
+            if (!IsValid && throwIfNotFound)
+            {
+                throw new CertificationAuthorityNotFoundException();
+            }
+
             CACertificate = new X509Certificate2((byte[])DirEntry.Properties[PropertyIndex.CACertificate].Value);
             IsEnterpriseCA = (int)DirEntry.Properties[PropertyIndex.Flags].Value == 10;
             DNSHostName = DirEntry.Properties[PropertyIndex.DNSHostName].Value.ToString();
@@ -111,13 +119,10 @@ namespace EasyPKIView
             {
                 for (int x=0; x<TemplateNames.Length; x++)
                 {
-                    try
+                    var Tmpl = new ADCertificateTemplate(TemplateNames[x].ToString(), throwIfNotFound: false);
+                    if (Tmpl.IsValid)
                     {
-                        Templates.Add(new ADCertificateTemplate(TemplateNames[x].ToString()));
-                    }
-                    catch (CertificateTemplateNotFoundException)
-                    {
-                        //Won't include any templates that don't resolve to a valid certificate template directory entry
+                        Templates.Add(Tmpl);
                     }
                 }
             }
@@ -136,14 +141,10 @@ namespace EasyPKIView
             {
                 foreach (DirectoryEntry CAEntry in EnrollmentServicesContainer.Children)
                 {
-                    try
+                    CA = new ADCertificationAuthority(CAEntry, throwIfNotFound: false);
+                    if (CA.IsValid)
                     {
-                        CA = new ADCertificationAuthority(CAEntry);
                         Collection.Add(CA);
-                    }
-                    catch (CertificationAuthorityNotFoundException)
-                    {
-                        //This directory entry is not a valid enrollment services object.
                     }
                 }
             }

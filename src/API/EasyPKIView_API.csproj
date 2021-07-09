@@ -1,39 +1,51 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net462;netcoreapp3.0</TargetFrameworks>
+    <TargetFrameworks>net462;net5.0</TargetFrameworks>
     <files>
       <file src="bin\Release\net462\EasyPKIView.dll" target="lib\net462\EasyPKIView.dll" />
-      <file src="bin\Release\netstandard2.0\EasyPKIView.dll" target="lib\netstandard2.0\EasyPKIView.dll" />
-      <file src="bin\Release\netcoreapp2.2\EasyPKIView.dll" target="lib\netcoreapp2.2\EasyPKIView.dll" />
+      <file src="bin\Release\net5.0\EasyPKIView.dll" target="lib\net5.0\EasyPKIView.dll" />
       <file src="..\..\LICENSE.txt" target="\" />
       <file src="..\..\images\logo_small.png" target="\" />
     </files>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <PackageId>MJBLogger</PackageId>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>EasyPKIView</PackageId>
     <Description>Simplifies working with PKI-related Active Directory objects (such as certificate templates and certification authorities).</Description>
-    <Version>1.0.4.0</Version>
+    <Version>1.1.4-beta2</Version>
     <Authors>Mike Bruno</Authors>
     <Company>X509Crypto.org</Company>
     <RepositoryUrl></RepositoryUrl>
-    <PackageTags>Logging Logs EnterpriseLibrary.Logging</PackageTags>
+    <PackageTags>PKI Certificate ADCS Active Directory Services Template</PackageTags>
     <NeutralLanguage>en-US</NeutralLanguage>
-    <Copyright>Copyright 2020</Copyright>
+    <Copyright>Copyright 2021</Copyright>
     <PackageReleaseNotes>
       Pre-release candidate
     </PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/MikeBrunoCISSP/EasyPKIView</PackageProjectUrl>
     <RootNamespace>EasyPKIView</RootNamespace>
     <AssemblyName>EasyPKIView</AssemblyName>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageIcon>logo_small.png</PackageIcon>
+    <PackageIconUrl />
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net462|AnyCPU'">
+    <DocumentationFile>P:\GitHub\Source\Repos\MikeBrunoCISSP\EasyPKIView\src\API\EasyPKIView_API.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net5.0|AnyCPU'">
     <DocumentationFile>P:\GitHub\Source\Repos\MikeBrunoCISSP\EasyPKIView\src\API\EasyPKIView_API.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Portable.BouncyCastle" Version="1.8.6.7" />
-    <PackageReference Include="System.DirectoryServices" Version="4.7.0" />
+    <PackageReference Include="System.DirectoryServices" Version="5.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\..\doc\docfx_project\images\logo_small.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>

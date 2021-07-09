@@ -126,14 +126,11 @@ namespace EasyPKIView
         /// ADCertificateTemplate Constructor 1
         /// </summary>
         /// <param name="name">The Name attribute of the certificate template as indicated in Active Directory</param>
-        public ADCertificateTemplate(string name)
+        /// <param name="throwIfNotFound">If true, throw an exception if the template object cannot be loaded from Active Directory</param>
+        public ADCertificateTemplate(string name, bool throwIfNotFound = true)
             : base(LdapUrls.CertificateTemplate(name), ObjectClass.PKICertificateTemplate)
         {
-            if (!Usable)
-            {
-                throw new CertificateTemplateNotFoundException(name);
-            }
-            SetFieldsFromDirectoryObject();
+            SetFieldsFromDirectoryObject(throwIfNotFound);
             GetAccessRules();
         }
 
@@ -141,14 +138,11 @@ namespace EasyPKIView
         /// ADCertificateTemplate Constructor 2
         /// </summary>
         /// <param name="TemplateEntry">The Active Directory entry pointing to this certificate template</param>
-        public ADCertificateTemplate(DirectoryEntry TemplateEntry)
+        /// <param name="throwIfNotFound">If true, throw an exception if the template object cannot be loaded from Active Directory</param>
+        public ADCertificateTemplate(DirectoryEntry TemplateEntry, bool throwIfNotFound = true)
             : base(TemplateEntry, ObjectClass.PKICertificateTemplate)
         {
-            if (!Usable)
-            {
-                throw new CertificateTemplateNotFoundException();
-            }
-            SetFieldsFromDirectoryObject();
+            SetFieldsFromDirectoryObject(throwIfNotFound);
             GetAccessRules();
         }
 
@@ -167,7 +161,7 @@ namespace EasyPKIView
                 {
                     templateOid = GetTemplateOidFromCertExtension(Extension);
                     FoundTemplate = GetAll().Where(p => p.Version > 1)
-                                             .FirstOrDefault(p => p.Oid.Matches(templateOid));
+                                            .FirstOrDefault(p => p.Oid.Matches(templateOid));
 
                     if (FoundTemplate == null)
                     {
@@ -181,8 +175,13 @@ namespace EasyPKIView
             throw new CertificateTemplateOidNotFoundException();
         }
 
-        private void SetFieldsFromDirectoryObject()
+        private void SetFieldsFromDirectoryObject(bool throwIfNotFound)
         {
+            if (!IsValid && throwIfNotFound)
+            {
+                throw new CertificateTemplateNotFoundException();
+            }
+
             Version = Convert.ToInt32(DirEntry.Properties[PropertyIndex.Version].Value);
             ExtendedKeyUsages = ExtendedKeyUsage.GetEKUs(DirEntry);
             KeyUsages = KeyUsage.GetKeyUsages((byte[])DirEntry.Properties[PropertyIndex.KeyUsage].Value);
@@ -244,8 +243,11 @@ namespace EasyPKIView
                 {
                     try
                     {
-                        Template = new ADCertificateTemplate(TemplateEntry);
-                        all.Add(Template);
+                        Template = new ADCertificateTemplate(TemplateEntry, throwIfNotFound: false);
+                        if (Template.IsValid)
+                        {
+                            all.Add(Template);
+                        }
                     }
                     catch (CertificateTemplateNotFoundException)
                     {

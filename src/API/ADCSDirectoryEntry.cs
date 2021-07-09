@@ -9,7 +9,7 @@ namespace EasyPKIView
     public class ADCSDirectoryEntry
     {
         internal DirectoryEntry DirEntry;
-        internal bool Usable = true;
+        internal bool IsValid = false;
 
         /// <summary>
         /// The Name attribute of the directory entry
@@ -71,23 +71,30 @@ namespace EasyPKIView
         {
             if (DirEntry == null)
             {
-                Usable = false;
                 return;
             }
 
-            object[] objectClass = (object[])DirEntry.Properties[PropertyIndex.ObjectClass].Value;
-            if (objectClass.Length < 2 || !objectClass[1].ToString().Matches(expectedObjectClass))
+            try
             {
-                Usable = false;
-                return;
-            }
+                object[] objectClass = (object[])DirEntry.Properties[PropertyIndex.ObjectClass].Value;
+                if (objectClass.Length < 2 || !objectClass[1].ToString().Matches(expectedObjectClass))
+                {
+                    return;
+                }
 
-            Name = DirEntry.Properties[PropertyIndex.Name].Value.ToString();
-            DisplayName = DirEntry.Properties[PropertyIndex.DisplayName].Value.ToString();
-            DistinguishedName = DirEntry.Properties[PropertyIndex.DistinguishedName].Value.ToString();
-            ObjectGuid = new Guid((byte[])DirEntry.Properties[PropertyIndex.ObjectGUID].Value);
-            WhenCreated = (DateTime)DirEntry.Properties[PropertyIndex.WhenCreated].Value;
-            WhenChanged = (DateTime)DirEntry.Properties[PropertyIndex.WhenChanged].Value;
+                Name = DirEntry.Properties[PropertyIndex.Name].Value.ToString();
+                DisplayName = DirEntry.Properties[PropertyIndex.DisplayName].Value.ToString();
+                DistinguishedName = DirEntry.Properties[PropertyIndex.DistinguishedName].Value.ToString();
+                ObjectGuid = new Guid((byte[])DirEntry.Properties[PropertyIndex.ObjectGUID].Value);
+                WhenCreated = (DateTime)DirEntry.Properties[PropertyIndex.WhenCreated].Value;
+                WhenChanged = (DateTime)DirEntry.Properties[PropertyIndex.WhenChanged].Value;
+
+                IsValid = true;
+            }
+            catch (DirectoryServicesCOMException)
+            {
+                //Not valid
+            }
         }
     }
 }
