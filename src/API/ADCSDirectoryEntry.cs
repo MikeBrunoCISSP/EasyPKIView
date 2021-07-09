@@ -67,6 +67,8 @@ namespace EasyPKIView
             : this(new DirectoryEntry(ldapURL), expectedObjectClass)
         { }
 
+        internal Exception CaughtEx = null;
+
         private void SetFieldsFromDirectoryEntry(string expectedObjectClass)
         {
             if (DirEntry == null)
@@ -91,8 +93,9 @@ namespace EasyPKIView
 
                 IsValid = true;
             }
-            catch (DirectoryServicesCOMException)
+            catch (Exception ex)
             {
+                CaughtEx = ex;
                 //Not valid
             }
         }

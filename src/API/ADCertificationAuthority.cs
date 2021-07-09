@@ -35,6 +35,11 @@ namespace EasyPKIView
         /// </summary>
         public List<ADCertificateTemplate> Templates { get; private set; } = new List<ADCertificateTemplate>();
 
+        /// <summary>
+        /// The CA config string as required by certutil.exe when targeting a specific CA
+        /// </summary>
+        public string Config => $"{DNSHostName}\\{DisplayName}";
+
 
         /// <summary>
         /// Indicates whether this CA advertises any certificate templates.
@@ -88,16 +93,27 @@ namespace EasyPKIView
 
         private void SetFieldsFromDirectoryObject(bool throwIfNotFound)
         {
-            if (!IsValid && throwIfNotFound)
+            if (IsValid)
             {
-                throw new CertificationAuthorityNotFoundException();
+                try
+                {
+                    CACertificate = new X509Certificate2((byte[])DirEntry.Properties[PropertyIndex.CACertificate].Value);
+                    IsEnterpriseCA = (int)DirEntry.Properties[PropertyIndex.Flags].Value == 10;
+                    DNSHostName = DirEntry.Properties[PropertyIndex.DNSHostName].Value.ToString();
+                    CACertificateDN = DirEntry.Properties[PropertyIndex.CACertificateDN].Value.ToString();
+                    GetTemplates(DirEntry);
+                }
+                catch(Exception ex)
+                {
+                    CaughtEx = ex;
+                    IsValid = false;
+                }
             }
 
-            CACertificate = new X509Certificate2((byte[])DirEntry.Properties[PropertyIndex.CACertificate].Value);
-            IsEnterpriseCA = (int)DirEntry.Properties[PropertyIndex.Flags].Value == 10;
-            DNSHostName = DirEntry.Properties[PropertyIndex.DNSHostName].Value.ToString();
-            CACertificateDN = DirEntry.Properties[PropertyIndex.CACertificateDN].Value.ToString();
-            GetTemplates(DirEntry);
+            if (!IsValid && throwIfNotFound)
+            {
+                throw new CertificationAuthorityNotFoundException(CaughtEx);
+            }
         }
 
         private void GetTemplates(DirectoryEntry CAEntry)

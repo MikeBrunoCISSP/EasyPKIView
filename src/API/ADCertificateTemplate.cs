@@ -177,19 +177,29 @@ namespace EasyPKIView
 
         private void SetFieldsFromDirectoryObject(bool throwIfNotFound)
         {
+            if (IsValid)
+            {
+                try
+                {
+                    Version = Convert.ToInt32(DirEntry.Properties[PropertyIndex.Version].Value);
+                    ExtendedKeyUsages = ExtendedKeyUsage.GetEKUs(DirEntry);
+                    KeyUsages = KeyUsage.GetKeyUsages((byte[])DirEntry.Properties[PropertyIndex.KeyUsage].Value);
+                    RASignaturesRequired = (int)DirEntry.Properties[PropertyIndex.RASignaturesRequired].Value;
+                    MinimumKeySize = (int)DirEntry.Properties[PropertyIndex.MinimumKeySize].Value;
+                    Oid = DirEntry.Properties[PropertyIndex.OID].Value.ToString();
+                    ValidityPeriod = ((byte[])DirEntry.Properties[PropertyIndex.ValidityPeriod].Value).ToTimeSpan();
+                    PrivateKeyFlags = (int)DirEntry.Properties[PropertyIndex.PrivateKeyFlags].Value;
+                }
+                catch(Exception ex)
+                {
+                    CaughtEx = ex;
+                    IsValid = false;
+                }
+            }
             if (!IsValid && throwIfNotFound)
             {
-                throw new CertificateTemplateNotFoundException();
+                throw new CertificateTemplateNotFoundException(CaughtEx);
             }
-
-            Version = Convert.ToInt32(DirEntry.Properties[PropertyIndex.Version].Value);
-            ExtendedKeyUsages = ExtendedKeyUsage.GetEKUs(DirEntry);
-            KeyUsages = KeyUsage.GetKeyUsages((byte[])DirEntry.Properties[PropertyIndex.KeyUsage].Value);
-            RASignaturesRequired = (int)DirEntry.Properties[PropertyIndex.RASignaturesRequired].Value;
-            MinimumKeySize = (int)DirEntry.Properties[PropertyIndex.MinimumKeySize].Value;
-            Oid = DirEntry.Properties[PropertyIndex.OID].Value.ToString();
-            ValidityPeriod = ((byte[])DirEntry.Properties[PropertyIndex.ValidityPeriod].Value).ToTimeSpan();
-            PrivateKeyFlags = (int)DirEntry.Properties[PropertyIndex.PrivateKeyFlags].Value;
         }
 
         private void GetAccessRules()

@@ -25,6 +25,10 @@ namespace EasyPKIView
             : base($"A certificate template with the name \"{name}\" could not be found in the current Active Directory forest")
         { }
 
+        internal CertificateTemplateNotFoundException(Exception innerException)
+            : base(@"Exception encountered attempting to read the specified certificate template directory entry in the current Active Directory forest", innerException)
+        { }
+
         internal CertificateTemplateNotFoundException()
             : base(@"The specified certificate template directory entry does not exist in the current Active Directory forest")
         { }
@@ -74,6 +78,10 @@ namespace EasyPKIView
     {
         internal CertificationAuthorityNotFoundException(string name)
             : base($"A certification authority enrollment services object with the name \"{name}\" could not be found in the current Active Directory forest")
+        { }
+
+        internal CertificationAuthorityNotFoundException(Exception innerException)
+            : base(@"Exception encountered attempting to read the specified enrollment services directory entry in the current Active Directory forest", innerException)
         { }
 
         internal CertificationAuthorityNotFoundException()

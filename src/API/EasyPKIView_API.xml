@@ -181,6 +181,11 @@
             The list of ADCertificateTemplates advertised as being available for enrollment on this CA.
             </summary>
         </member>
+        <member name="P:EasyPKIView.ADCertificationAuthority.Config">
+            <summary>
+            The CA config string as required by certutil.exe when targeting a specific CA
+            </summary>
+        </member>
         <member name="P:EasyPKIView.ADCertificationAuthority.HasTemplates">
             <summary>
             Indicates whether this CA advertises any certificate templates.
