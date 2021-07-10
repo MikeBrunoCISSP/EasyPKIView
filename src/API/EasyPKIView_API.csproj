@@ -11,7 +11,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>EasyPKIView</PackageId>
     <Description>Simplifies working with PKI-related Active Directory objects (such as certificate templates and certification authorities).</Description>
-    <Version>1.1.4-beta3</Version>
+    <Version>1.1.4-beta4</Version>
     <Authors>Mike Bruno</Authors>
     <Company>X509Crypto.org</Company>
     <RepositoryUrl></RepositoryUrl>
